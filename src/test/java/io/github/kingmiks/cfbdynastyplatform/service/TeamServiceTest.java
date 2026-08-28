@@ -28,20 +28,34 @@ public class TeamServiceTest {
 
         assertEquals("Ashburn Panthers", result.getName());
     }
+
     @Test
-void getTeamThrowsWhenNoTeamExists() {
+    void getTeamThrowsWhenNoTeamExists() {
 
-    TeamRepository teamRepository = Mockito.mock(TeamRepository.class);
+        TeamRepository teamRepository = Mockito.mock(TeamRepository.class);
 
-    TeamService teamService = new TeamService(teamRepository);
+        TeamService teamService = new TeamService(teamRepository);
 
-    when(teamRepository.findAll()).thenReturn(List.of());
+        when(teamRepository.findAll()).thenReturn(List.of());
 
+        assertThrows(
+                IllegalStateException.class,
+                () -> teamService.getTeam());
 
-    assertThrows(
-    IllegalStateException.class,
-    () -> teamService.getTeam()
-);
+    }
+    @Test
+    void getTeamThrowsWhenMultipleTeamsExist(){
+        TeamRepository teamRepository = Mockito.mock(TeamRepository.class);
 
-}
+        TeamService teamService = new TeamService(teamRepository);
+
+        Team team = new Team("Ashburn Panthers");
+        Team team2 = new Team("Virginia Tech");
+
+        when(teamRepository.findAll()).thenReturn(List.of(team, team2));
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> teamService.getTeam());
+    }
 }

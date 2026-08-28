@@ -18,6 +18,9 @@ public class TeamService {
         if (teams.isEmpty()){
             throw new IllegalStateException("No teams exists.");
         }
+        if (teams.size() > 1){
+            throw new IllegalStateException("Cannot get more than one team.");
+        }
         return teams.get(0);
     }
     public Team createTeam(String name){
