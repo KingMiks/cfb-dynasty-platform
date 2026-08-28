@@ -1,7 +1,7 @@
 package io.github.kingmiks.cfbdynastyplatform.service;
 import io.github.kingmiks.cfbdynastyplatform.model.Team;
 import io.github.kingmiks.cfbdynastyplatform.repository.TeamRepository;
-
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,7 +13,12 @@ public class TeamService {
         this.teamRepository = teamRepository;
     }
     public Team getTeam() {
-        return teamRepository.findById(1L).orElseThrow();
+        List<Team> teams = teamRepository.findAll();
+
+        if (teams.isEmpty()){
+            throw new IllegalStateException("No teams exists.");
+        }
+        return teams.get(0);
     }
     public Team createTeam(String name){
         Team team = new Team(name);
