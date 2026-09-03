@@ -6,6 +6,7 @@ import io.github.kingmiks.cfbdynastyplatform.repository.GameRepository;
 import io.github.kingmiks.cfbdynastyplatform.model.Team;
 import io.github.kingmiks.cfbdynastyplatform.model.Season;
 import io.github.kingmiks.cfbdynastyplatform.model.Game;
+import io.github.kingmiks.cfbdynastyplatform.model.GameLocation;
 
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
@@ -26,7 +27,7 @@ public class GameServiceTest {
 
         Season season = new Season(2026, team);
 
-        Game game = new Game(1, season);
+        Game game = new Game(1, season, "Wake Forest", GameLocation.HOME);
 
         when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
 
@@ -60,14 +61,16 @@ public class GameServiceTest {
 
         Season season = new Season(2026, team);
 
-        Game game = new Game(1, season);
+        Game game = new Game(1, season, "Wake Forest", GameLocation.HOME);
 
         when(gameRepository.save(Mockito.any(Game.class))).thenReturn(game);
 
-        Game result = gameService.createGame(1, season);
+        Game result = gameService.createGame(1, season, "Wake Forest", GameLocation.HOME);
 
         assertEquals(game, result);
         assertEquals(1, result.getWeek());
+        assertEquals("Wake Forest", result.getOpponent());
+        assertEquals(GameLocation.HOME, result.getLocation());
 
     }
 }

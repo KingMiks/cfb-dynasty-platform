@@ -3,6 +3,7 @@ package io.github.kingmiks.cfbdynastyplatform.service;
 import org.springframework.stereotype.Service;
 
 import io.github.kingmiks.cfbdynastyplatform.model.Game;
+import io.github.kingmiks.cfbdynastyplatform.model.GameLocation;
 import io.github.kingmiks.cfbdynastyplatform.model.Season;
 import io.github.kingmiks.cfbdynastyplatform.repository.GameRepository;
 
@@ -10,14 +11,16 @@ import io.github.kingmiks.cfbdynastyplatform.repository.GameRepository;
 public class GameService {
     private final GameRepository gameRepository;
 
-    public GameService(GameRepository gameRepository){
+    public GameService(GameRepository gameRepository) {
         this.gameRepository = gameRepository;
     }
-    public Game createGame(int week, Season season){
-        Game game = new Game(week, season);
+
+    public Game createGame(int week, Season season, String opponent, GameLocation location) {
+        Game game = new Game(week, season, opponent, location);
         return gameRepository.save(game);
     }
-    public Game getGame(Long id){
+
+    public Game getGame(Long id) {
         return gameRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Game does not exist."));
     }
 }
