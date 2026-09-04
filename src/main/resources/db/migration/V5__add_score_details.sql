@@ -1,0 +1,3 @@
+ALTER TABLE game
+    ADD COLUMN our_score INTEGER NOT NULL,
+    ADD COLUMN opponent_score INTEGER NOT NULL;

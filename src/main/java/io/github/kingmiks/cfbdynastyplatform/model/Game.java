@@ -21,41 +21,71 @@ public class Game {
     private String opponent;
     @Enumerated(EnumType.STRING)
     private GameLocation location;
+    private int ourScore;
+    private int opponentScore;
 
-    protected Game(){
+    protected Game() {
 
     }
 
-    public Game(int week, Season season, String opponent, GameLocation location){
-        setGame(week, season, opponent, location);
+    public Game(int week, Season season, String opponent, GameLocation location, int ourScore, int opponentScore) {
+        setGame(week, season, opponent, location, ourScore, opponentScore);
     }
-    public void setGame(int week, Season season, String opponent, GameLocation location){
+
+    public void setGame(int week, Season season, String opponent,
+            GameLocation location, int ourScore, int opponentScore) {
         if (week <= 0 || season == null
-            || opponent == null || opponent.isBlank()
-            || location == null
-        ){
-            throw new IllegalArgumentException("Season, opponent, and location must not be null, week must be greater than 0, opponent must not be blank.");
+                || opponent == null || opponent.isBlank()
+                || location == null || ourScore < 0
+                || opponentScore < 0) {
+            throw new IllegalArgumentException(
+                    "Season, opponent, and location must not be null. " +
+                            "Week must be greater than 0, opponent must not be blank, and scores must not be negative.");
         }
         this.week = week;
         this.season = season;
         this.opponent = opponent;
         this.location = location;
-        
+        this.ourScore = ourScore;
+        this.opponentScore = opponentScore;
+
     }
-    public Long getID(){
+
+    public Long getID() {
         return id;
     }
-    public int getWeek(){
+
+    public int getWeek() {
         return week;
     }
-    public Season getSeason(){
+
+    public Season getSeason() {
         return season;
     }
-    public String getOpponent(){
+
+    public String getOpponent() {
         return opponent;
     }
-    public GameLocation getLocation(){
+
+    public GameLocation getLocation() {
         return location;
+    }
+
+    public int getOurScore() {
+        return ourScore;
+    }
+
+    public int getOpponentScore() {
+        return opponentScore;
+    }
+    public GameResult getResult(){
+        if (ourScore == opponentScore){
+            throw new IllegalStateException("Game cannot end in a tie.");
+        }
+        if (ourScore > opponentScore){
+            return GameResult.WIN;
+        }
+        return GameResult.LOSS;
     }
 
 }
