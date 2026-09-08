@@ -11,6 +11,7 @@ import io.github.kingmiks.cfbdynastyplatform.model.GameResult;
 
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -117,5 +118,28 @@ public class GameServiceTest {
                 IllegalStateException.class,
                 () -> game.getResult());
         
+    }
+
+    @Test
+    public void checkIfGetSeasonScheduleIsCorrect(){
+        GameRepository gameRepository = Mockito.mock(GameRepository.class);
+
+        GameService gameService = new GameService(gameRepository);
+
+        Team team = new Team("Ashburn Panthers");
+
+        Season season = new Season(2026, team);
+
+        Game game = new Game(1, season, "Wake Forest", GameLocation.HOME, 31, 24);
+        Game game2 = new Game(2, season, "Clemson", GameLocation.AWAY, 34, 21);
+
+        when(gameRepository.findBySeasonOrderByWeekAsc(season)).thenReturn(List.of(game, game2));
+
+        List<Game> result = gameService.getSeasonSchedule(season);
+
+        assertEquals(2, result.size());
+        assertEquals(1, result.get(0).getWeek());
+        assertEquals(2, result.get(1).getWeek());
+
     }
 }

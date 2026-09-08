@@ -1,7 +1,7 @@
 package io.github.kingmiks.cfbdynastyplatform.service;
 
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 import io.github.kingmiks.cfbdynastyplatform.model.Game;
 import io.github.kingmiks.cfbdynastyplatform.model.GameLocation;
 import io.github.kingmiks.cfbdynastyplatform.model.Season;
@@ -22,5 +22,9 @@ public class GameService {
 
     public Game getGame(Long id) {
         return gameRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Game does not exist."));
+    }
+
+    public List<Game> getSeasonSchedule(Season season){
+        return gameRepository.findBySeasonOrderByWeekAsc(season);
     }
 }
