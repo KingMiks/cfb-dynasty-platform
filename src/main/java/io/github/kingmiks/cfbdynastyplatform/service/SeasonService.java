@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import io.github.kingmiks.cfbdynastyplatform.repository.SeasonRepository;
 import io.github.kingmiks.cfbdynastyplatform.model.Season;
 import io.github.kingmiks.cfbdynastyplatform.model.Team;
+import java.util.List;
 
 @Service
 public class SeasonService {
@@ -20,5 +21,20 @@ public class SeasonService {
 
     public Season getSeason(Long id){
         return seasonRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Season does not exist."));
+    }
+
+    public Season getCurrentSeason(){
+        List<Season> seasons = seasonRepository.findAll();
+        if (seasons.isEmpty()){
+            throw new IllegalStateException("Season doesn't exist.");
+        }
+        if (seasons.size() > 1){
+            throw new IllegalStateException("Cannot determine current season when more than one season exists.");
+        }
+        return seasons.get(0);
+    }
+
+    public boolean hasSeason(){
+        return seasonRepository.count() > 0;
     }
 }

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule</title>
+</head>
+<body>
+    <h1>Ashburn Panthers Schedule</h1>
+    <h2 th:text="${season.year}">Season</h2>
+    <table>
+    <thead>
+        <tr>
+            <th>Week</th>
+            <th>Opponent</th>
+            <th>Location</th>
+            <th>Score</th>
+            <th>Result</th>
+        </tr>
+    </thead>
+    <tbody>
+    <tr th:each="game : ${games}">
+    <td th:text="${game.week}">Week</td>
+    <td th:text="${game.opponent}">Opponent</td>
+    <td th:text="${game.location}">Location</td>
+    <td th:text="${game.ourScore + ' - ' + game.opponentScore}">Score</td>
+    <td th:text="${game.result}">Result</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

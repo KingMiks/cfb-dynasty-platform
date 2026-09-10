@@ -27,4 +27,10 @@ public class GameService {
     public List<Game> getSeasonSchedule(Season season){
         return gameRepository.findBySeasonOrderByWeekAsc(season);
     }
+    public boolean hasGames(){
+        return gameRepository.count() > 0;
+    }
+    public boolean hasGameForWeek(Season season, int week){
+        return gameRepository.findBySeasonAndWeek(season, week).isPresent();
+    }
 }

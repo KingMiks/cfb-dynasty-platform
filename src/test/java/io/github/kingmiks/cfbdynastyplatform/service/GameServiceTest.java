@@ -16,6 +16,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class GameServiceTest {
     
@@ -142,4 +144,39 @@ public class GameServiceTest {
         assertEquals(2, result.get(1).getWeek());
 
     }
+
+    @Test
+    public void checkIfHasGameForWeekHasGame(){
+        GameRepository gameRepository = Mockito.mock(GameRepository.class);
+        GameService gameService = new GameService(gameRepository);
+
+        Team team = new Team("Ashburn Panthers");
+
+        Season season = new Season(2026, team);
+
+        Game game = new Game(1, season, "Wake Forest", GameLocation.HOME, 31, 24);
+
+        when(gameRepository.findBySeasonAndWeek(season, 1)).thenReturn(Optional.of(game));
+
+        boolean result = gameService.hasGameForWeek(season, 1);
+
+        assertTrue(result);
+    }
+    @Test
+    public void checkIfHasGameForWeekHasNoGame(){
+        GameRepository gameRepository = Mockito.mock(GameRepository.class);
+        GameService gameService = new GameService(gameRepository);
+
+        Team team = new Team("Ashburn Panthers");
+
+        Season season = new Season(2026, team);
+
+        when(gameRepository.findBySeasonAndWeek(season, 1)).thenReturn(Optional.empty());
+
+        boolean result = gameService.hasGameForWeek(season, 1);
+
+        assertFalse(result);
+    }
+
 }
+
