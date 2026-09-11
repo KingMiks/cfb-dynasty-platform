@@ -15,7 +15,7 @@ public class GameService {
         this.gameRepository = gameRepository;
     }
 
-    public Game createGame(int week, Season season, String opponent, GameLocation location, int ourScore, int opponentScore) {
+    public Game createGame(int week, Season season, String opponent, GameLocation location, Integer ourScore, Integer opponentScore) {
         Game game = new Game(week, season, opponent, location, ourScore, opponentScore);
         return gameRepository.save(game);
     }

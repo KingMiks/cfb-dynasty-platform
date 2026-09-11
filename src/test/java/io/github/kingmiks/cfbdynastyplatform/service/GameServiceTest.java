@@ -178,5 +178,31 @@ public class GameServiceTest {
         assertFalse(result);
     }
 
+    @Test
+    public void checkIfGameResultIsCorrectWhenNotPlayed(){
+
+        Team team = new Team("Ashburn Panthers");
+
+        Season season = new Season(2026, team);
+
+        Game game = new Game(1, season, "Wake Forest", GameLocation.HOME, null, null);
+
+        GameResult result = game.getResult();
+
+        assertEquals(GameResult.SCHEDULED, result);
+    }
+    @Test
+    public void checkIfGameResultIsCorrectWhenWeOneIsNull(){
+
+        Team team = new Team("Ashburn Panthers");
+
+        Season season = new Season(2026, team);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Game(1, season, "Wake Forest", GameLocation.HOME, null, 31));
+        
+    }
+
 }
 

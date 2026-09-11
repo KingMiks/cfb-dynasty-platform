@@ -21,23 +21,24 @@ public class Game {
     private String opponent;
     @Enumerated(EnumType.STRING)
     private GameLocation location;
-    private int ourScore;
-    private int opponentScore;
+    private Integer ourScore;
+    private Integer opponentScore;
 
     protected Game() {
 
     }
 
-    public Game(int week, Season season, String opponent, GameLocation location, int ourScore, int opponentScore) {
+    public Game(int week, Season season, String opponent, GameLocation location, Integer ourScore, Integer opponentScore) {
         setGame(week, season, opponent, location, ourScore, opponentScore);
     }
 
     public void setGame(int week, Season season, String opponent,
-            GameLocation location, int ourScore, int opponentScore) {
+            GameLocation location, Integer ourScore, Integer opponentScore) {
         if (week <= 0 || season == null
                 || opponent == null || opponent.isBlank()
-                || location == null || ourScore < 0
-                || opponentScore < 0) {
+                || location == null || (ourScore == null) != (opponentScore == null)
+                || (ourScore != null && opponentScore != null 
+                && (ourScore < 0 || opponentScore < 0))) {
             throw new IllegalArgumentException(
                     "Season, opponent, and location must not be null. " +
                             "Week must be greater than 0, opponent must not be blank, and scores must not be negative.");
@@ -71,15 +72,19 @@ public class Game {
         return location;
     }
 
-    public int getOurScore() {
+    public Integer getOurScore() {
         return ourScore;
     }
 
-    public int getOpponentScore() {
+    public Integer getOpponentScore() {
         return opponentScore;
     }
     public GameResult getResult(){
-        if (ourScore == opponentScore){
+
+        if (ourScore == null){
+            return GameResult.SCHEDULED;
+        }
+        if(ourScore.equals(opponentScore)){
             throw new IllegalStateException("Game cannot end in a tie.");
         }
         if (ourScore > opponentScore){
