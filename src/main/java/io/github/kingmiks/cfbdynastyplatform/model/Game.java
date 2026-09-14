@@ -28,7 +28,8 @@ public class Game {
 
     }
 
-    public Game(int week, Season season, String opponent, GameLocation location, Integer ourScore, Integer opponentScore) {
+    public Game(int week, Season season, String opponent, GameLocation location, Integer ourScore,
+            Integer opponentScore) {
         setGame(week, season, opponent, location, ourScore, opponentScore);
     }
 
@@ -37,8 +38,8 @@ public class Game {
         if (week <= 0 || season == null
                 || opponent == null || opponent.isBlank()
                 || location == null || (ourScore == null) != (opponentScore == null)
-                || (ourScore != null && opponentScore != null 
-                && (ourScore < 0 || opponentScore < 0))) {
+                || (ourScore != null && opponentScore != null
+                        && (ourScore < 0 || opponentScore < 0))) {
             throw new IllegalArgumentException(
                     "Season, opponent, and location must not be null. " +
                             "Week must be greater than 0, opponent must not be blank, and scores must not be negative.");
@@ -79,18 +80,33 @@ public class Game {
     public Integer getOpponentScore() {
         return opponentScore;
     }
-    public GameResult getResult(){
 
-        if (ourScore == null){
+    public GameResult getResult() {
+
+        if (ourScore == null) {
             return GameResult.SCHEDULED;
         }
-        if(ourScore.equals(opponentScore)){
+        if (ourScore.equals(opponentScore)) {
             throw new IllegalStateException("Game cannot end in a tie.");
         }
-        if (ourScore > opponentScore){
+        if (ourScore > opponentScore) {
             return GameResult.WIN;
         }
         return GameResult.LOSS;
     }
 
+    public void recordResult(Integer ourScore, Integer opponentScore) {
+        if (ourScore == null || opponentScore == null) {
+            throw new IllegalArgumentException("Scores must not be null.");
+        }
+
+        if (ourScore < 0 || opponentScore < 0) {
+            throw new IllegalArgumentException("Scores must not be negative.");
+        }
+        if (ourScore.equals(opponentScore)) {
+            throw new IllegalStateException("Game cannot end in a tie.");
+        }
+        this.ourScore = ourScore;
+        this.opponentScore = opponentScore;
+    }
 }

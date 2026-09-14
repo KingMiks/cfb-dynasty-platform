@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.verify;
 
 public class GameServiceTest {
     
@@ -201,6 +202,47 @@ public class GameServiceTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Game(1, season, "Wake Forest", GameLocation.HOME, null, 31));
+        
+    }
+
+    @Test
+    public void checkIfGameResultIsRecorded(){
+
+        Team team = new Team("Ashburn Panthers");
+
+        Season season = new Season(2026, team);
+
+        Game game = new Game(1, season, "Wake Forest", GameLocation.HOME, null, null);
+
+        game.recordResult(31, 27);
+
+        assertEquals(31, game.getOurScore());
+        assertEquals(27, game.getOpponentScore());
+        assertEquals(GameResult.WIN, game.getResult());
+    }
+
+    @Test
+    public void recordGameResultUpdatesAndSavesGame(){
+
+        GameRepository gameRepository = Mockito.mock(GameRepository.class);
+
+        GameService gameService = new GameService(gameRepository);
+
+        Team team = new Team("Ashburn Panthers");
+
+        Season season = new Season(2026, team);
+
+        Game game = new Game(1, season, "Wake Forest", GameLocation.HOME, null, null);
+
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+        when(gameRepository.save(Mockito.any(Game.class))).thenReturn(game);
+
+        Game result = gameService.recordGameResult(1L, 31, 27);
+
+        assertEquals(31, result.getOurScore());
+        assertEquals(27, result.getOpponentScore());
+        assertEquals(GameResult.WIN, result.getResult());
+        verify(gameRepository).save(game);
         
     }
 

@@ -33,4 +33,9 @@ public class GameService {
     public boolean hasGameForWeek(Season season, int week){
         return gameRepository.findBySeasonAndWeek(season, week).isPresent();
     }
+    public Game recordGameResult(Long id, Integer ourScore, Integer opponentScore) {
+    Game game = getGame(id);
+    game.recordResult(ourScore, opponentScore);
+    return gameRepository.save(game);
+    }
 }
