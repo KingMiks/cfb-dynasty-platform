@@ -16,6 +16,7 @@
           <th>Location</th>
           <th>Score</th>
           <th>Result</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -29,6 +30,18 @@
             Score
           </td>
           <td th:text="${game.result}">Result</td>
+          <td>
+            <form
+              th:if="${game.result.name() == 'SCHEDULED'}"
+              action="/schedule/result"
+              method="post"
+            >
+              <input type="hidden" name="gameId" th:value="${game.ID}" />
+              <input type="number" name="ourScore" />
+              <input type="number" name="opponentScore" />
+              <button type="submit">Submit</button>
+            </form>
+          </td>
         </tr>
       </tbody>
     </table>
