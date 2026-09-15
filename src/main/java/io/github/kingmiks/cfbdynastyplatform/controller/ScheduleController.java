@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class ScheduleController {
@@ -36,10 +37,14 @@ public class ScheduleController {
     public String recordResult(
             @RequestParam Long gameId,
             @RequestParam Integer ourScore,
-            @RequestParam Integer opponentScore) {
+            @RequestParam Integer opponentScore,
+            RedirectAttributes redirectAttributes) {
 
-        gameService.recordGameResult(gameId, ourScore, opponentScore);
-
+        try {
+            gameService.recordGameResult(gameId, ourScore, opponentScore);
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/schedule";
     }
 }

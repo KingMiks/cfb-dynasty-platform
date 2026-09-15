@@ -55,5 +55,14 @@ public class DataInitializer implements CommandLineRunner {
                     null,
                     null);
         }
+        if (!gameService.hasGameForWeek(season, 9)) {
+            gameService.createGame(
+                    9,
+                    season,
+                    "Virginia",
+                    GameLocation.HOME,
+                    null,
+                    null);
+        }
     }
 }
