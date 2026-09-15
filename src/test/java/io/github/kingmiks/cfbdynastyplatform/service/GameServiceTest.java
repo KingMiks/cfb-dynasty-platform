@@ -8,6 +8,7 @@ import io.github.kingmiks.cfbdynastyplatform.model.Season;
 import io.github.kingmiks.cfbdynastyplatform.model.Game;
 import io.github.kingmiks.cfbdynastyplatform.model.GameLocation;
 import io.github.kingmiks.cfbdynastyplatform.model.GameResult;
+import io.github.kingmiks.cfbdynastyplatform.dto.GameScoreUpdate;
 
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
@@ -18,12 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class GameServiceTest {
-    
+
     @Test
-    public void getGameReturnsExistingGame(){
+    public void getGameReturnsExistingGame() {
         GameRepository gameRepository = Mockito.mock(GameRepository.class);
 
         GameService gameService = new GameService(gameRepository);
@@ -42,7 +44,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void getGameWhenNoGameExists(){
+    public void getGameWhenNoGameExists() {
 
         GameRepository gameRepository = Mockito.mock(GameRepository.class);
 
@@ -50,14 +52,13 @@ public class GameServiceTest {
 
         when(gameRepository.findById(99L)).thenReturn(Optional.empty());
 
-
         assertThrows(
                 IllegalArgumentException.class,
                 () -> gameService.getGame(99L));
     }
 
     @Test
-    public void createGameSavesGame(){
+    public void createGameSavesGame() {
         GameRepository gameRepository = Mockito.mock(GameRepository.class);
 
         GameService gameService = new GameService(gameRepository);
@@ -80,7 +81,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void checkIfGameResultIsCorrectWhenWeWin(){
+    public void checkIfGameResultIsCorrectWhenWeWin() {
 
         Team team = new Team("Ashburn Panthers");
 
@@ -91,10 +92,11 @@ public class GameServiceTest {
         GameResult result = game.getResult();
 
         assertEquals(GameResult.WIN, result);
-        
+
     }
+
     @Test
-    public void checkIfGameResultIsCorrectWhenLose(){
+    public void checkIfGameResultIsCorrectWhenLose() {
 
         Team team = new Team("Ashburn Panthers");
 
@@ -105,11 +107,11 @@ public class GameServiceTest {
         GameResult result = game.getResult();
 
         assertEquals(GameResult.LOSS, result);
-        
+
     }
 
     @Test
-    public void checkIfGameResultIsCorrectWhenWeTie(){
+    public void checkIfGameResultIsCorrectWhenWeTie() {
 
         Team team = new Team("Ashburn Panthers");
 
@@ -120,11 +122,11 @@ public class GameServiceTest {
         assertThrows(
                 IllegalStateException.class,
                 () -> game.getResult());
-        
+
     }
 
     @Test
-    public void checkIfGetSeasonScheduleIsCorrect(){
+    public void checkIfGetSeasonScheduleIsCorrect() {
         GameRepository gameRepository = Mockito.mock(GameRepository.class);
 
         GameService gameService = new GameService(gameRepository);
@@ -147,7 +149,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void checkIfHasGameForWeekHasGame(){
+    public void checkIfHasGameForWeekHasGame() {
         GameRepository gameRepository = Mockito.mock(GameRepository.class);
         GameService gameService = new GameService(gameRepository);
 
@@ -163,8 +165,9 @@ public class GameServiceTest {
 
         assertTrue(result);
     }
+
     @Test
-    public void checkIfHasGameForWeekHasNoGame(){
+    public void checkIfHasGameForWeekHasNoGame() {
         GameRepository gameRepository = Mockito.mock(GameRepository.class);
         GameService gameService = new GameService(gameRepository);
 
@@ -180,7 +183,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void checkIfGameResultIsCorrectWhenNotPlayed(){
+    public void checkIfGameResultIsCorrectWhenNotPlayed() {
 
         Team team = new Team("Ashburn Panthers");
 
@@ -192,8 +195,9 @@ public class GameServiceTest {
 
         assertEquals(GameResult.SCHEDULED, result);
     }
+
     @Test
-    public void checkIfGameResultIsCorrectWhenWeOneIsNull(){
+    public void checkIfGameResultIsCorrectWhenWeOneIsNull() {
 
         Team team = new Team("Ashburn Panthers");
 
@@ -202,11 +206,11 @@ public class GameServiceTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new Game(1, season, "Wake Forest", GameLocation.HOME, null, 31));
-        
+
     }
 
     @Test
-    public void checkIfGameResultIsRecorded(){
+    public void checkIfGameResultIsRecorded() {
 
         Team team = new Team("Ashburn Panthers");
 
@@ -222,7 +226,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void recordGameResultUpdatesAndSavesGame(){
+    public void recordGameResultUpdatesAndSavesGame() {
 
         GameRepository gameRepository = Mockito.mock(GameRepository.class);
 
@@ -243,8 +247,68 @@ public class GameServiceTest {
         assertEquals(27, result.getOpponentScore());
         assertEquals(GameResult.WIN, result.getResult());
         verify(gameRepository).save(game);
-        
+
+    }
+
+    @Test
+    public void testIfGameScoreUpdateIsCorrect() {
+
+        GameRepository gameRepository = Mockito.mock(GameRepository.class);
+
+        GameService gameService = new GameService(gameRepository);
+
+        Team team = new Team("Ashburn Panthers");
+
+        Season season = new Season(2026, team);
+
+        Game game = new Game(1, season, "Wake Forest", GameLocation.HOME, null, null);
+
+        Game game3 = new Game(3, season, "Virginia Tech", GameLocation.NEUTRAL, null, null);
+
+        when(gameRepository.findById(1L)).thenReturn(Optional.of(game));
+        when(gameRepository.findById(3L)).thenReturn(Optional.of(game3));
+        when(gameRepository.save(Mockito.any(Game.class))).thenReturn(game, game3);
+
+        GameScoreUpdate update1 = new GameScoreUpdate();
+        update1.setGameId(1L);
+        update1.setOurScore(27);
+        update1.setOpponentScore(7);
+        GameScoreUpdate update2 = new GameScoreUpdate();
+        update2.setGameId(2L);
+        update2.setOurScore(null);
+        update2.setOpponentScore(null);
+        GameScoreUpdate update3 = new GameScoreUpdate();
+        update3.setGameId(3L);
+        update3.setOurScore(35);
+        update3.setOpponentScore(24);
+        List<GameScoreUpdate> updates = List.of(update1, update2, update3);
+        gameService.updateGameScores(updates);
+        verify(gameRepository, never()).findById(2L);
+        assertEquals(27, game.getOurScore());
+        assertEquals(7, game.getOpponentScore());
+        assertEquals(GameResult.WIN, game.getResult());
+        assertEquals(35, game3.getOurScore());
+        assertEquals(24, game3.getOpponentScore());
+        assertEquals(GameResult.WIN, game3.getResult());
+
+    }
+
+    @Test
+    public void updateGameScoresRejectsIncompleteScore() {
+        GameRepository gameRepository = Mockito.mock(GameRepository.class);
+
+        GameService gameService = new GameService(gameRepository);
+
+        GameScoreUpdate update = new GameScoreUpdate();
+        update.setGameId(2L);
+        update.setOurScore(27);
+        update.setOpponentScore(null);
+        List<GameScoreUpdate> updates = List.of(update);
+        assertThrows(
+                IllegalStateException.class,
+                () -> gameService.updateGameScores(updates));
+        verify(gameRepository, never()).findById(2L);
+        verify(gameRepository, never()).save(Mockito.any(Game.class));
     }
 
 }
-

@@ -6,6 +6,7 @@ import io.github.kingmiks.cfbdynastyplatform.model.Game;
 import io.github.kingmiks.cfbdynastyplatform.model.GameLocation;
 import io.github.kingmiks.cfbdynastyplatform.model.Season;
 import io.github.kingmiks.cfbdynastyplatform.repository.GameRepository;
+import io.github.kingmiks.cfbdynastyplatform.dto.GameScoreUpdate;
 
 @Service
 public class GameService {
@@ -37,5 +38,17 @@ public class GameService {
     Game game = getGame(id);
     game.recordResult(ourScore, opponentScore);
     return gameRepository.save(game);
+    }
+    public void updateGameScores(List<GameScoreUpdate> updates){
+        for (GameScoreUpdate update : updates){
+
+            if(update.getOurScore() == null && update.getOpponentScore() == null){
+                continue;
+            }
+            if(update.getOurScore() == null || update.getOpponentScore() == null){
+                throw new IllegalStateException("Both score entries must have a score.");
+            }
+            recordGameResult(update.getGameId(), update.getOurScore(), update.getOpponentScore());
+        }
     }
 }
