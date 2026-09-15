@@ -33,14 +33,13 @@
           <td th:text="${game.result}">Result</td>
           <td>
             <form
-              th:if="${game.result.name() == 'SCHEDULED'}"
               action="/schedule/result"
               method="post"
             >
               <input type="hidden" name="gameId" th:value="${game.ID}" />
-              <input type="number" name="ourScore" min="0" step= "1" required />
-              <input type="number" name="opponentScore" min="0" step= "1" required />
-              <button type="submit">Submit</button>
+              <input type="number" name="ourScore" th:value="${game.ourScore}" min="0" step= "1" required />
+              <input type="number" name="opponentScore" th:value="${game.opponentScore}" min="0" step= "1" required />
+              <button type="submit">Save Score</button>
             </form>
           </td>
         </tr>
