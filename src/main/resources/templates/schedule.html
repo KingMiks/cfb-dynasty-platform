@@ -9,41 +9,57 @@
     <h1>Ashburn Panthers Schedule</h1>
     <h2 th:text="${season.year}">Season</h2>
     <p th:if="${errorMessage}" th:text="${errorMessage}"></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Week</th>
-          <th>Opponent</th>
-          <th>Location</th>
-          <th>Score</th>
-          <th>Result</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="game : ${games}">
-          <td th:text="${game.week}">Week</td>
-          <td th:text="${game.opponent}">Opponent</td>
-          <td th:text="${game.location}">Location</td>
-          <td
-            th:text="${game.result.name() == 'SCHEDULED' ? '—' : game.ourScore + ' - ' + game.opponentScore}"
-          >
-            Score
-          </td>
-          <td th:text="${game.result}">Result</td>
-          <td>
-            <form
-              action="/schedule/result"
-              method="post"
+    <form
+      th:action="@{/schedule/results}"
+      th:object="${scheduleUpdateForm}"
+      method="post"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th>Week</th>
+            <th>Opponent</th>
+            <th>Location</th>
+            <th>Score</th>
+            <th>Result</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="game, stat : ${games}">
+            <td th:text="${game.week}">Week</td>
+            <td th:text="${game.opponent}">Opponent</td>
+            <td th:text="${game.location}">Location</td>
+            <td
+              th:text="${game.result.name() == 'SCHEDULED' ? '—' : game.ourScore + ' - ' + game.opponentScore}"
             >
-              <input type="hidden" name="gameId" th:value="${game.ID}" />
-              <input type="number" name="ourScore" th:value="${game.ourScore}" min="0" step= "1" required />
-              <input type="number" name="opponentScore" th:value="${game.opponentScore}" min="0" step= "1" required />
-              <button type="submit">Save Score</button>
-            </form>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              Score
+            </td>
+            <td th:text="${game.result}">Result</td>
+            <td>
+              <input
+                type="hidden"
+                th:field="*{gameScoreUpdates[__${stat.index}__].gameId}"
+              />
+
+              <input
+                type="number"
+                th:field="*{gameScoreUpdates[__${stat.index}__].ourScore}"
+                min="0"
+                step="1"
+              />
+
+              <input
+                type="number"
+                th:field="*{gameScoreUpdates[__${stat.index}__].opponentScore}"
+                min="0"
+                step="1"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button type="submit">Save Changes</button>
+    </form>
   </body>
 </html>

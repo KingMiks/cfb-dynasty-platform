@@ -14,6 +14,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.mockito.ArgumentCaptor;
+import java.util.List;
+import io.github.kingmiks.cfbdynastyplatform.dto.GameScoreUpdate;
 
 @WebMvcTest(ScheduleController.class)
 public class ScheduleControllerTest {
@@ -51,5 +55,33 @@ public class ScheduleControllerTest {
                 .andExpect(flash().attribute("errorMessage", "Game cannot end in a tie."));
         verify(gameService).recordGameResult(4L, 31, 31);
 
+    }
+
+    @Test
+    public void recordResultsBindsMultipleGameScoreUpdates() throws Exception {
+
+        mockMvc.perform(post("/schedule/results")
+                .param("gameScoreUpdates[0].gameId", "1")
+                .param("gameScoreUpdates[0].ourScore", "24")
+                .param("gameScoreUpdates[0].opponentScore", "10")
+                .param("gameScoreUpdates[1].gameId", "2")
+                .param("gameScoreUpdates[1].ourScore", "14")
+                .param("gameScoreUpdates[1].opponentScore", "7"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/schedule"));
+        ArgumentCaptor<List<GameScoreUpdate>> captor = ArgumentCaptor.forClass(List.class);
+
+        verify(gameService).updateGameScores(captor.capture());
+
+        List<GameScoreUpdate> updates = captor.getValue();
+
+        assertEquals(2, updates.size());
+        assertEquals(1L, updates.get(0).getGameId());
+        assertEquals(24, updates.get(0).getOurScore());
+        assertEquals(10, updates.get(0).getOpponentScore());
+
+        assertEquals(2L, updates.get(1).getGameId());
+        assertEquals(14, updates.get(1).getOurScore());
+        assertEquals(7, updates.get(1).getOpponentScore());
     }
 }
