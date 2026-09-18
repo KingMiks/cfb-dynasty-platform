@@ -7,6 +7,7 @@ import io.github.kingmiks.cfbdynastyplatform.model.GameLocation;
 import io.github.kingmiks.cfbdynastyplatform.model.Season;
 import io.github.kingmiks.cfbdynastyplatform.repository.GameRepository;
 import io.github.kingmiks.cfbdynastyplatform.dto.GameScoreUpdate;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GameService {
@@ -39,6 +40,7 @@ public class GameService {
     game.recordResult(ourScore, opponentScore);
     return gameRepository.save(game);
     }
+    @Transactional 
     public void updateGameScores(List<GameScoreUpdate> updates){
         for (GameScoreUpdate update : updates){
 
