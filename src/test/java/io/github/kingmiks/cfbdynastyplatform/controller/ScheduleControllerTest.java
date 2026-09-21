@@ -61,6 +61,20 @@ public class ScheduleControllerTest {
                 .andExpect(flash().attribute("errorMessage", "Scores must not be negative."));
 
     }
+    @Test
+    public void recordResultsShowsErrorWhenNullScoreisAdded() throws Exception {
+        doThrow(new IllegalStateException("Both score entries must have a score."))
+                .when(gameService)
+                .updateGameScores(anyList());
+        mockMvc.perform(post("/schedule/results")
+                .param("gameScoreUpdates[0].gameId", "4")
+                .param("gameScoreUpdates[0].ourScore", "31")
+                .param("gameScoreUpdates[0].opponentScore", ""))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/schedule"))
+                .andExpect(flash().attribute("errorMessage", "Both score entries must have a score."));
+
+    }
 
     @Test
     public void recordResultsBindsMultipleGameScoreUpdates() throws Exception {
