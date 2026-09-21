@@ -69,7 +69,7 @@ public class ScheduleController {
         
         try {
             gameService.updateGameScores(scheduleUpdateForm.getGameScoreUpdates());
-        } catch (IllegalStateException e) {
+        } catch (IllegalStateException | IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
 

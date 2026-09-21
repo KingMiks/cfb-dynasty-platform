@@ -18,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.mockito.ArgumentCaptor;
 import java.util.List;
 import io.github.kingmiks.cfbdynastyplatform.dto.GameScoreUpdate;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.anyList;
 
 @WebMvcTest(ScheduleController.class)
 public class ScheduleControllerTest {
@@ -54,6 +56,36 @@ public class ScheduleControllerTest {
                 .andExpect(redirectedUrl("/schedule"))
                 .andExpect(flash().attribute("errorMessage", "Game cannot end in a tie."));
         verify(gameService).recordGameResult(4L, 31, 31);
+
+    }
+
+    @Test
+    public void recordResultShowsErrorWhenTiedAfterUpdate() throws Exception {
+        doThrow(new IllegalStateException("Game cannot end in a tie."))
+                .when(gameService)
+                .updateGameScores(anyList());
+        mockMvc.perform(post("/schedule/results")
+                .param("gameScoreUpdates[0].gameId", "4")
+                .param("gameScoreUpdates[0].ourScore", "31")
+                .param("gameScoreUpdates[0].opponentScore", "31"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/schedule"))
+                .andExpect(flash().attribute("errorMessage", "Game cannot end in a tie."));
+
+    }
+
+    @Test
+    public void recordResultShowsErrorWhenNegativeScoreisAdded() throws Exception {
+        doThrow(new IllegalArgumentException("Scores must not be negative."))
+                .when(gameService)
+                .updateGameScores(anyList());
+        mockMvc.perform(post("/schedule/results")
+                .param("gameScoreUpdates[0].gameId", "4")
+                .param("gameScoreUpdates[0].ourScore", "-31")
+                .param("gameScoreUpdates[0].opponentScore", "31"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/schedule"))
+                .andExpect(flash().attribute("errorMessage", "Scores must not be negative."));
 
     }
 
