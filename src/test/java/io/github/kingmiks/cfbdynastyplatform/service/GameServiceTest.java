@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 public class GameServiceTest {
 
@@ -292,7 +293,7 @@ public class GameServiceTest {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> gameService.recordGameResult(1L, null, null));
-                verify(gameRepository, never()).save(any(Game.class));
+        verify(gameRepository, never()).save(any(Game.class));
     }
 
     @Test
@@ -354,6 +355,45 @@ public class GameServiceTest {
                 () -> gameService.updateGameScores(updates));
         verify(gameRepository, never()).findById(2L);
         verify(gameRepository, never()).save(Mockito.any(Game.class));
+    }
+
+    @Test
+    public void updateGameScoresSkipsUnchangedGames() {
+        GameRepository gameRepository = Mockito.mock(GameRepository.class);
+
+        GameService gameService = new GameService(gameRepository);
+        Team team = new Team("Ashburn Panthers");
+
+        Season season = new Season(2026, team);
+
+        Game game = new Game(1, season, "Wake Forest", GameLocation.HOME, 27, 7);
+
+        Game game2 = new Game(2, season, "Virginia Tech", GameLocation.NEUTRAL, 31, 24);
+
+        when(gameRepository.findById(1L))
+                .thenReturn(Optional.of(game));
+
+        when(gameRepository.findById(2L))
+                .thenReturn(Optional.of(game2));
+        GameScoreUpdate update1 = new GameScoreUpdate();
+        update1.setGameId(1L);
+        update1.setOurScore(27);
+        update1.setOpponentScore(7);
+        GameScoreUpdate update2 = new GameScoreUpdate();
+        update2.setGameId(2L);
+        update2.setOurScore(35);
+        update2.setOpponentScore(24);
+        List<GameScoreUpdate> updates = List.of(update1, update2);
+        gameService.updateGameScores(updates);
+
+        verify(gameRepository, times(1)).save(any(Game.class));
+        assertEquals(27, game.getOurScore());
+        assertEquals(7, game.getOpponentScore());
+        assertEquals(GameResult.WIN, game.getResult());
+        assertEquals(35, game2.getOurScore());
+        assertEquals(24, game2.getOpponentScore());
+        assertEquals(GameResult.WIN, game2.getResult());
+
     }
 
 }
