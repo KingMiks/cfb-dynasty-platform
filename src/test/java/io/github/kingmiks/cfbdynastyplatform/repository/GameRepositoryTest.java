@@ -14,6 +14,8 @@ import jakarta.persistence.EntityManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.springframework.dao.DataIntegrityViolationException;
 import java.util.Optional;
 
 import java.util.List;
@@ -77,5 +79,24 @@ public class GameRepositoryTest {
         assertEquals(GameResult.WIN, reloadedGame.get().getResult());
 
     }
+
+    @Test
+    public void shouldRejectDuplicateWeeksWithinSameSeason() {
+
+    Team team = new Team("Ashburn Panthers");
+        teamRepository.save(team);
+
+        Season season = new Season(2026, team);
+        seasonRepository.save(season);
+
+        Game game = new Game(1, season, "Virginia Tech", GameLocation.NEUTRAL, 20, 0);
+        gameRepository.saveAndFlush(game);
+
+        Game game2 = new Game(1, season, "Wake Forest", GameLocation.HOME, 34, 21);
+        
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            gameRepository.saveAndFlush(game2);
+        });
+}
 
 }
