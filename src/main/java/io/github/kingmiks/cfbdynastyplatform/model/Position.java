@@ -1,0 +1,25 @@
+package io.github.kingmiks.cfbdynastyplatform.model;
+
+public enum Position {
+    QB,
+    HB,
+    FB,
+    WR,
+    TE,
+    LT,
+    LG,
+    C,
+    RG,
+    RT,
+    LE,
+    RE,
+    DT,
+    LOLB,
+    MLB,
+    ROLB,
+    CB,
+    FS,
+    SS,
+    K,
+    P,
+}
