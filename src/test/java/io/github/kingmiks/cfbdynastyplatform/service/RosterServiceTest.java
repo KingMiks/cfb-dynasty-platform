@@ -1,6 +1,7 @@
 package io.github.kingmiks.cfbdynastyplatform.service;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ public class RosterServiceTest {
     private RosterService rosterService;
 
     @Test
-    void shouldGetRosterSpotById() {
+    public void shouldGetRosterSpotById() {
         // Arrange: Prepare our mock data
         Player player = new Player("Jimu", "Myung", "Ashburn, VA");
         Team team = new Team("Ashburn Panthers");
@@ -43,6 +44,19 @@ public class RosterServiceTest {
 
         // Assert
         assertSame(spot, result);
+
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenRosterSpotIsNotFound() {
+        // Arrange
+        when(rosterSpotRepository.findById(5L))
+                .thenReturn(Optional.empty());
+
+        // Act & Assert
+        assertThrows(IllegalArgumentException.class, () -> {
+            rosterService.getRosterSpot(5L);
+        });
 
     }
 }
